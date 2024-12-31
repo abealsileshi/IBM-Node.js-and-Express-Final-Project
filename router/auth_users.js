@@ -92,17 +92,24 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   let username = req.session.authorization?.username
   let isbn = req.params.isbn
-  let breview = books[isbn].review[username]
-  console.log(`the current user is ${username} `)
-  console.log(`here we can see the book review ${breview}`)
   
-  Object.keys(books[isbn].review).forEach(key => {
-    if (key === username) {
-      delete books[isbn].review[key];
-      return res.status(200).send('book review was deleted successfully')
-    }
-  })
+  
+  let breview = books[isbn].reviews[username]
+  //check the book review exists
+  if (!breview) {
+    console.log(`the current user is ${username} `)
+    console.log(`here we can see the book review ${breview}`)
 
+    Object.keys(books[isbn].reviews).forEach(key => {
+      if (key === username) {
+        delete books[isbn].reviews[key];
+        return res.status(200).send('book review was deleted successfully')
+      }
+    })
+  }
+  else{
+    return res.status(400).send('The specified book review was not found for some reason')
+  }
 });
 
 module.exports.authenticated = regd_users;

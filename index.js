@@ -8,16 +8,17 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true,  cookie: { maxAge: 3600000 }}))
+app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
-app.use((req, res, next) => {
-    console.log('Session Cookies: \n', req.cookies);
-    console.log('Session Data: \n', req.session);
-    next();
-  });
+// app.use((req, res, next) => {
+//     console.log('Session Cookies: \n', req.cookies);
+//     console.log('Session Data: \n', req.session);
+//     next();
+//   });
 
 app.use("/customer/auth/*", function auth(req,res,next){
     //Write the authenication mechanism here
+    console.log('this is req.session.authorization: \n', req.session.authorization)
     if(req.session.authorization){
         let token = req.session.authorization['accessToken']
         //Verify JWT token
