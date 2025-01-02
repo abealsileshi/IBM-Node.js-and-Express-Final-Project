@@ -5,7 +5,8 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username) => { //returns boolean
+//returns boolean, true is user array contains specified username
+const isValid = (username) => { 
   let hasUser = users.filter((user) => {
     return user.username === username
   })
@@ -30,7 +31,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
   }
 }
 
-//only registered users can login
+// login logic to login a PREVIOUSLY REGISTERED USER
 regd_users.post("/login", (req,res) => {
   let username = req.body.username;
   let password = req.body.password;
@@ -46,7 +47,6 @@ regd_users.post("/login", (req,res) => {
   // }
 
   if(authenticatedUser(username, password)){
-    console.log('we entered here')
     let accessToken = jwt.sign(
       {data : password},
       'access',
@@ -57,9 +57,9 @@ regd_users.post("/login", (req,res) => {
       accessToken, username
     }
 
-    console.log("Access Token:", accessToken);
+    // debug statement console.log("Access Token:", accessToken);
 
-    console.log("this is req.session.authorization \n", req.session.authorization)
+    // debug statement console.log("this is req.session.authorization \n", req.session.authorization)
     return res.status(200).send(`User ${username} successfully logged in`)
   }
   else{
@@ -80,16 +80,9 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     return res.status(400).send('User is not logged in. Invalid Request.')
   }
 
-  //check if user already has a review, if so overwrite previous review
- // let userReview = books[isbn].reviews.find( r => r.username == username);
-  if(books[isbn].reviews[username]){
-    books[isbn].reviews[username] = review
-    return res.status(200).json({message: "Review Successfully updated! (method 1)"});
-  }
-  else {
-    books[isbn].reviews[username] = review
-    return res.status(200).json({message: "Review Successfully added! (method 2)"});
-  }
+  books[isbn].reviews[username] = review
+  return res.status(200).json({message: "Review added/updated Successfully!"});
+  
 });
 
 //The code for deleting a book review
@@ -102,8 +95,8 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   let breview = books[isbn].reviews[username]
   //check the book review exists
   if (breview) {
-    console.log(`the current user is ${username} `)
-    console.log(`here we can see the book review ${breview}`)
+    // console.log(`the current user is ${username} `)
+    // console.log(`here we can see the book review ${breview}`)
 
     Object.keys(books[isbn].reviews).forEach(key => {
       if (key === username) {

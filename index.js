@@ -10,17 +10,17 @@ app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true,  cookie: { maxAge: 3600000 }}))
 
-//for debugging purposes - see how the log changes using cURL requests
-app.use((req, res, next) => {
-    console.log('req.session variable: \n', req.session);
-   // console.log('req.session.username : \n', req.session.username);
+// an extra middleware for debugging purposes - see how the log changes using cURL requests
+// app.use((req, res, next) => {
+//     console.log('req.session variable: \n', req.session);
+//     console.log('req.session.username : \n', req.session.username);
 
-    next();
-  });
+//     next();
+//   });
 
 app.use("/customer/auth/*", function auth(req,res,next){
     //Write the authenication mechanism here
-    console.log('this is req.session var (in /customer/auth/* middleware): \n', req.session)
+    //console.log('this is req.session var (in /customer/auth/* middleware): \n', req.session)
     if(req.session.authorization){
         let token = req.session.authorization['accessToken']
         //Verify JWT token

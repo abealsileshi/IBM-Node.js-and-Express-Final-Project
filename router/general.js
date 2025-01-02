@@ -114,7 +114,6 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   let isbn = req.params.isbn;
-  
   return res.send(JSON.stringify(books[isbn].reviews , null, 2));
 });
 
