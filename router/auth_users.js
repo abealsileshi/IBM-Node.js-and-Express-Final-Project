@@ -35,26 +35,31 @@ regd_users.post("/login", (req,res) => {
   let username = req.body.username;
   let password = req.body.password;
 
-  console.log('Hey Abeal, these are the users registered')
-  if(users.length == 0){
-    console.log('users array is empty')
-  }
-  else{
-    for(var i = 0; i < users.length; i++){
-      console.log(users[i])
-    }
-  }
+  // console.log('Hey Abeal, these are the users registered')
+  // if(users.length == 0){
+  //   console.log('users array is empty')
+  // }
+  // else{
+  //   for(var i = 0; i < users.length; i++){
+  //     console.log(users[i])
+  //   }
+  // }
 
   if(authenticatedUser(username, password)){
+    console.log('we entered here')
     let accessToken = jwt.sign(
       {data : password},
       'access',
-      //expires in a day. 60 secs x 60 times = 1hr x 24 = 1day
-      {expiresIn : 60 * 60 * 24});
+      //expires in a day. 60 secs x 60 times = 1hr
+      {expiresIn : 60 * 60});
     
     req.session.authorization = {
       accessToken, username
     }
+
+    console.log("Access Token:", accessToken);
+
+    console.log("this is req.session.authorization \n", req.session.authorization)
     return res.status(200).send(`User ${username} successfully logged in`)
   }
   else{
@@ -68,7 +73,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   let review = req.query.review
   let username = req.session.authorization?.username
   
-  console.log("the req.session.authorization objected here \n ", req.session.authorization);
+  // console.log("the req.session.authorization objected here \n ", req.session.authorization);
 
   //first check if a user is logged in and if so put that review under their name
   if(!username){
@@ -96,14 +101,14 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   
   let breview = books[isbn].reviews[username]
   //check the book review exists
-  if (!breview) {
+  if (breview) {
     console.log(`the current user is ${username} `)
     console.log(`here we can see the book review ${breview}`)
 
     Object.keys(books[isbn].reviews).forEach(key => {
       if (key === username) {
         delete books[isbn].reviews[key];
-        return res.status(200).send('book review was deleted successfully')
+        return res.status(200).send(`Book review by ${username}, found at isbn ${isbn} was deleted successfully`)
       }
     })
   }

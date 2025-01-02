@@ -8,17 +8,19 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
+app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true,  cookie: { maxAge: 3600000 }}))
 
-// app.use((req, res, next) => {
-//     console.log('Session Cookies: \n', req.cookies);
-//     console.log('Session Data: \n', req.session);
-//     next();
-//   });
+//for debugging purposes - see how the log changes using cURL requests
+app.use((req, res, next) => {
+    console.log('req.session variable: \n', req.session);
+   // console.log('req.session.username : \n', req.session.username);
+
+    next();
+  });
 
 app.use("/customer/auth/*", function auth(req,res,next){
     //Write the authenication mechanism here
-    console.log('this is req.session.authorization: \n', req.session.authorization)
+    console.log('this is req.session var (in /customer/auth/* middleware): \n', req.session)
     if(req.session.authorization){
         let token = req.session.authorization['accessToken']
         //Verify JWT token
