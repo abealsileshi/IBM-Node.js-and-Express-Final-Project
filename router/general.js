@@ -30,47 +30,85 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  // console.log(books)
-  return res.send(JSON.stringify(books, null, 2));
+// Task 10: getting the list of books available in the shop 
+// using Promise callbacks or async-await with Axios
+public_users.get('/', function (req, res) {
+  new Promise((resolve) => {
+    resolve(books); // Replace this with any asynchronous data fetching logic
+    console.log("promise resolved")
+  })
+  .then((data) => {
+    res.send(JSON.stringify(data, null, 2));
+  })
+  .catch((err) => {
+    res.status(500).send('Error fetching books');
+  });
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  let isbn = req.params.isbn;
-  
-  return res.send(JSON.stringify(books[isbn], null, 2));
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  results = []
-  let author = req.params.author
-  Object.entries(books).forEach( ([key,value]) => {
-    if( value.author === author){
-      results.push(books[key])
+// Part 2: Do task again using promises or async/await
+public_users.get('/isbn/:isbn',function (req, res) { 
+  new Promise((resolve, reject) => {
+    let isbn = req.params.isbn; 
+    if (books[isbn]) { // Check if the book at the specified index exists
+      resolve(books[isbn]); // Resolve with the specific book
+      console.log('promise resolved')
+    } else {
+      reject(new Error("Book not found")); // Reject with an error
     }
   })
-  return res.send(results)
+    // The data parameter contains whatever was passed to resolve.
+    .then((data) => {
+      res.send(JSON.stringify(data, null, 2)); // Send the book details as a response
+    })
+    .catch((err) => {
+      res.status(404).send(err.message); // Send a 404 status with the error message
+    });
+});
+  
+// Get book details based on author
+// Task 12 : use promises/ async-await to do function
+public_users.get('/author/:author',function (req, res) {
+  results = []
+  let author = req.params.author
+  new Promise((resolve, reject) => {
+    const results = Object.values(books).filter((book) => book.author === author);
+    if (results.length > 0) { // Check if the book at the specified index exists
+      resolve(results); // Resolve with the specific book
+      // debug statement console.log('promise resolved')
+    } else {
+      reject(new Error(` No books with ${author} found!`)); // Reject with an error
+    }
+  })
+    // The data parameter contains whatever was passed to resolve.
+    .then((data) => {
+      res.send(JSON.stringify(data, null, 2)); // Send the book details as a response
+    })
+    .catch((err) => {
+      res.status(404).send(err.message); // Send a 404 status with the error message
+    });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-   results = []
-   let title = req.params.title
-   Object.entries(books).forEach( ([key,value]) => {
-     if(value.title === title){
-       results.push(books[key])
-     }
-   })
-   if(results.length == 0){
-    return res.send(` No books with ${title} found!`)
-   }
-   else{
-    return res.send(results)
-   }
+  results = []
+  let title = req.params.title
+  new Promise((resolve, reject) => {
+    const results = Object.values(books).filter((book) => book.title === title);
+    if (results.length > 0) { // Check if the book at the specified index exists
+      resolve(results); // Resolve with the specific book
+      // debug statement console.log('promise resolved')
+    } else {
+      reject(new Error(` No books with ${title} found!`)); // Reject with an error
+    }
+  })
+    // The data parameter contains whatever was passed to resolve.
+    .then((data) => {
+      res.send(JSON.stringify(data, null, 2)); // Send the book details as a response
+    })
+    .catch((err) => {
+      res.status(404).send(err.message); // Send a 404 status with the error message
+    });
 });
 
 //  Get book review
